@@ -1,7 +1,8 @@
 <template>
   <div>
     <p>{{ defaultText }}</p>
-    <a :style="('font-size:'+style+'px')">{{ msg }}</a>
+    <a :style="('font-size:'+String(size)+'px')">{{ msg }}</a>
+    <a>{{String(size)}}</a>
     <input type="text" v-model="msg">
     <button @click="clear()">clear</button>
     <button @click="sizeUp()">sizeUp</button>
@@ -9,12 +10,16 @@
 </template>
 
 <script>
+import firestore from '@/plugins/firebase.js'
+
 export default {
   name: 'HelloWorld',
   style: "10",
-  a: 10,
   mounted () {
-    browser.runtime.sendMessage({})
+    const snapshot = firestore.collection("pages").get()
+    snapshot.forEach((doc) => {
+      console.log(doc.id, '=>', doc.data())
+    })
   },
   computed: {
     defaultText () {
@@ -23,7 +28,8 @@ export default {
   },
   data () {
     return {
-      msg: "hogehogeMessage"
+      msg: "hogehogeMessage",
+      size: 10
     }
   },
   methods: {
@@ -31,7 +37,7 @@ export default {
       this.msg = ""
     },
     sizeUp() {
-      this.style = "20"
+      this.size += 10
     }
   }
 }
